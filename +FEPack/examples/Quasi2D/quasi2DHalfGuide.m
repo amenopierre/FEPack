@@ -133,7 +133,7 @@ function [R, D, newBCstruct, Lambda] = quasi2DHalfGuide(meshXY, meshYZ, meshLine
       end
 
       % Save local cell solutions
-      parsave([folder_name, 'local_cell_sol_', suffix, '_S_', num2str(idS)], solcell, true);
+      FEPack.tools.parsave([folder_name, 'local_cell_sol_', suffix, '_S_', num2str(idS)], solcell, true);
     end
     tps = toc;
     fprintf(fid, '%0.5e\t', tps);
@@ -329,7 +329,7 @@ function [R, D, newBCstruct, Lambda] = quasi2DHalfGuide(meshXY, meshYZ, meshLine
       solcell.edgeT1y1x = -invBCdu * (BCu * solcell.E1y(edge1x_IdPoints, :) - speye_y1x);
 
       % Save local cell solutions
-      parsave([folder_name, 'local_cell_sol_', suffix, '_S_', num2str(idS)], solcell, true);
+      FEPack.tools.parsave([folder_name, 'local_cell_sol_', suffix, '_S_', num2str(idS)], solcell, true);
     end
     tps = toc;
     fprintf(fid, '%0.5e\t', tps);

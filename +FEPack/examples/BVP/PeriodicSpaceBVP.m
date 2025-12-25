@@ -195,7 +195,7 @@ function U = PeriodicSpaceBVP(semiInfiniteDirection, infiniteDirections,...
     end
 
     % The Floquet-Bloch transform of the boundary data along the relevant directions
-    volLinearIntg_FB.fun = @(x) BlochTransform(x, K(idFB, :), volLinearIntg.fun, infiniteDirections);
+    volLinearIntg_FB.fun = @(x) FEPack.tools.BlochTransform(x, K(idFB, :), volLinearIntg.fun, infiniteDirections);
 
     % Compute the solution
     TFBU{idFB} = PeriodicGuideBVP(semiInfiniteDirection,...

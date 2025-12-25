@@ -110,7 +110,7 @@ for idPx = 1:numSubK-1
 
     P = ecs.P;
 
-    parfor idI = 1:numK
+    for idI = 1:numK
       fprintf('%d sur %d\n', idI, numK);
       
       kv = Kpts(idI, :);

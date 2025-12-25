@@ -87,7 +87,7 @@ end
 % x = linspace(-8, 8, 1024)';
 % phi = @(x) FEPack.tools.cutoff(x(:, 1), -1, 1, 1);
 % 
-% TFBphi = @(x, k) BlochTransform(x, k, phi, 1);
+% TFBphi = @(x, k) FEPack.tools.BlochTransform(x, k, phi, 1);
 % Nk = 100;
 % K = linspace(-pi, pi, Nk)';
 % phir = @(x) (1/sqrt(2*pi)) * (2*pi/(Nk-1)) * diag(TFBphi(x, K) * exp(+1i*K*x'));

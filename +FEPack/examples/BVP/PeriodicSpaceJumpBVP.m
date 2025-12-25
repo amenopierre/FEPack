@@ -163,8 +163,8 @@ function U = PeriodicSpaceJumpBVP(semiInfiniteDirection, infiniteDirections, per
     end
 
     % The Floquet-Bloch transform of the boundary data along the relevant directions
-    % jumpLinearIntg_FB.fun = {@(x) BlochTransform(x, K(idFB, :), jumpLinearIntg.fun{1}, infiniteDirections)};
-    jumpData_FB = @(x) BlochTransform(x, K(idFB, :), jumpData, infiniteDirections);
+    % jumpLinearIntg_FB.fun = {@(x) FEPack.tools.BlochTransform(x, K(idFB, :), jumpLinearIntg.fun{1}, infiniteDirections)};
+    jumpData_FB = @(x) FEPack.tools.BlochTransform(x, K(idFB, :), jumpData, infiniteDirections);
 
     % Compute the solution
     TFBU{idFB} = PeriodicGuideJumpBVP(semiInfiniteDirection,...

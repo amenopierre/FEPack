@@ -19,7 +19,7 @@ function TFBphi = TFB_Lagrange_P1_1D(mesh, x, k, period, BlochType)
     phi = @(P) ((P(:, 1) - nodes_minus_one) ./ (nodes - nodes_minus_one)) .* (P(:, 1) <= nodes & P(:, 1) > nodes_minus_one) + ...
                ((nodes_plus_one -  P(:, 1)) ./ (nodes_plus_one -  nodes)) .* (P(:, 1) <= nodes_plus_one &  P(:, 1) > nodes);
     %
-    TFBvec(:, idB, :) = BlochTransform(x, k, phi, 1, period, 1000, BlochType);
+    TFBvec(:, idB, :) = FEPack.tools.BlochTransform(x, k, phi, 1, period, 1000, BlochType);
 
   end
   

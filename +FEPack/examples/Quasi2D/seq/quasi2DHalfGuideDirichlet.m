@@ -89,10 +89,10 @@ function quasi2DHalfGuideDirichlet(orientation, meshXY, meshYZ, omega, mu3D, rho
       LL0 = -ecs.P * AA * ecs.b;
       
       % Solve the linear system
-      % tic;
+      tic;
       Ecell0 = ecs.b + ecs.P' * (AA0 \ LL0);
-      % tpscpu = toc;
-      % fprintf('Inversion système : %0.3e secondes\n', tpscpu);
+      tpscpu = toc;
+      fprintf('Inversion système : %0.3e secondes\n', tpscpu);
 
       % Local cell solutions
       solcell.E0x = Ecell0(:, 1:N0x); Ecell0(:, 1:N0x) = [];
@@ -101,7 +101,7 @@ function quasi2DHalfGuideDirichlet(orientation, meshXY, meshYZ, omega, mu3D, rho
       solcell.E1y = Ecell0(:, 1:N1y-2);
 
       % local edge DtN operators
-      tic;
+      % tic;
       for idI = 1:4
         for idJ = 1:4
           nameEi  = ['E', sidenames{idI}];
@@ -110,7 +110,7 @@ function quasi2DHalfGuideDirichlet(orientation, meshXY, meshYZ, omega, mu3D, rho
           solcell.(nameTij) = solcell.(nameEj)' * (AA * solcell.(nameEi));
         end
       end
-      tpscpu = toc;
+      % tpscpu = toc;
       % fprintf('Calcul DtN : %0.3e secondes\n', tpscpu);
 
       % Save local cell data
@@ -152,12 +152,12 @@ function quasi2DHalfGuideDirichlet(orientation, meshXY, meshYZ, omega, mu3D, rho
 
       % for idI = 1:4
       %   nameFunI = ['fun', sidenames{idI}];
-
+      %
       %   for idJ = 1:4
       %     nameFunJ = ['fun', sidenames{idJ}];
       %     nameAuxT  = ['T',  sidenames{idI}, sidenames{idJ}];
       %     nameEdgeT = ['edgeT',  sidenames{idI}, sidenames{idJ}];
-
+      %
       %     aux.(nameAuxT) = aux.(nameAuxT) + shearmap.(nameFunJ)' * solcell.(nameEdgeT) * shearmap.(nameFunI);
       %   end
       % end

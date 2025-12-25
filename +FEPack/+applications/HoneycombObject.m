@@ -11,6 +11,7 @@ classdef HoneycombObject < FEPack.FEPackObject
     % Expression of the honeycomb lattice potentials
     V = [];
     W = [];
+    A = [];
     
     % Center of lattice
     center = [];
@@ -37,7 +38,7 @@ classdef HoneycombObject < FEPack.FEPackObject
 
   methods
 
-    function obj = HoneycombObject(typeV, typeW, funV, funW)
+    function obj = HoneycombObject(typeV, typeW, typeA, funV, funW, funA)
 
       % is_even (boolean): is the potential even?
       % is_real (boolean): is the potential real-valued?
@@ -92,6 +93,37 @@ classdef HoneycombObject < FEPack.FEPackObject
       else
 
         error(['Option ', typeV, ' unrecognized; only options are ''atomic'', ''optical'', ''trigonometric'', ''custom''']);
+
+      end
+
+      % A
+      if strcmpi(typeA, 'atomic')
+
+        obj.A = @(x) FEPack.tools.atomicPotential(x, obj.vecPer1, obj.vecPer2);
+
+      elseif strcmpi(typeA, 'optical')
+
+        obj.A = @(x) FEPack.tools.opticalPotential(x, obj.dualVec1, obj.dualVec2, true);
+
+      elseif strcmpi(typeA, 'trigonometric')
+
+        obj.A = @(x) obj.trigonometricPolynomial(x, true);
+
+      elseif strcmpi(typeA, 'custom')
+
+        if (nargin < 3)
+          error(['Option', typeA, ' was selected: a function handle has to be provided.']);
+        end
+
+        obj.A = funA;
+
+      elseif strcmpi(typeA, 'none')
+
+        obj.A = [];
+      
+      else
+
+        error(['Option ', typeA, ' unrecognized; only options are ''atomic'', ''optical'', ''trigonometric'', ''custom''']);
 
       end
 

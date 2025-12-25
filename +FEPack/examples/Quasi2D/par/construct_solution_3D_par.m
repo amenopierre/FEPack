@@ -62,7 +62,7 @@ function construct_solution_3D_par(orientation, meshXY, meshLineZ, BCstruct, opt
     soltrace.R1phi = solguide.D * soltrace.R0phi;
 
     % save([nomdossier, name_trace, num2str(idFB)], 'R0phi', 'R1phi', '-append');
-    parsave([nomdossier, name_trace, num2str(idFB)], soltrace, true);
+    FEPack.tools.parsave([nomdossier, name_trace, num2str(idFB)], soltrace, true);
   end
 
   %% Compute inverse FB transform

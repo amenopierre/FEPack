@@ -297,7 +297,7 @@ phisYZneg = @(YZ, idI) spBtrs.phis(YZ(:, 2) - YZ(:, 1) * cutslopeNeg, idTrs(idI)
 fprintf('<strong>DtN demi-plan positif.</strong>\n');
 TFBphiPosVec = zeros(meshYZpos.numPoints, numBasis, numFloquetPoints_pos);
 for idI = 1:numBasis
-  TFBphiPosVec(:, idI, :) = BlochTransform(meshYZpos.points,...
+  TFBphiPosVec(:, idI, :) = FEPack.tools.BlochTransform(meshYZpos.points,...
                                            FloquetPoints_pos, @(x) phisYZpos(x, idI),...
                                            1, opts.period, 1000);
 end
@@ -325,7 +325,7 @@ lambda_pos = lambda_pos / cutvecpos(1);
 fprintf('<strong>DtN demi-plan negatif.</strong>\n');
 TFBphiNegVec = zeros(meshYZneg.numPoints, numBasis, numFloquetPoints_neg);
 for idI = 1:numBasis
-  TFBphiNegVec(:, idI, :) = BlochTransform(meshYZneg.points,...
+  TFBphiNegVec(:, idI, :) = FEPack.tools.BlochTransform(meshYZneg.points,...
                                            FloquetPoints_neg, @(x) phisYZneg(x, idI),...
                                            1, opts.period, 1000);
 end
@@ -377,7 +377,7 @@ parfor idFB = 1:numFloquetPoints_pos
   soltrace.vec = TFBphiPos{idFB} * trace_solution;
   
   % Save the trace of the solution
-  parsave([nomdossier, 'sol_trace_Floquet_pos_', num2str(idFB)], soltrace, true);
+  FEPack.tools.parsave([nomdossier, 'sol_trace_Floquet_pos_', num2str(idFB)], soltrace, true);
 end
 
 parfor idFB = 1:numFloquetPoints_neg
@@ -387,7 +387,7 @@ parfor idFB = 1:numFloquetPoints_neg
   soltrace.vec = TFBphiNeg{idFB} * trace_solution;
   
   % Save the trace of the solution
-  parsave([nomdossier, 'sol_trace_Floquet_neg_', num2str(idFB)], soltrace, true);
+  FEPack.tools.parsave([nomdossier, 'sol_trace_Floquet_neg_', num2str(idFB)], soltrace, true);
 end
 
 %% Construct solution

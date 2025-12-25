@@ -14,6 +14,9 @@ classdef Quadtree < FEPack.FEPackObject
     %> @brief Quadtree nodes [xmin, ymin, xmax, ymax, depth]
     leaves
 
+    %> @brief vector containing values within each leaf
+    leaf_vals
+
     %> @brief Maximum refinement depth
     maxDepth 
 
@@ -138,6 +141,8 @@ classdef Quadtree < FEPack.FEPackObject
         % obj.visualize();
         % pause;
       end
+
+      obj.compute_leaf_values;
     end
     
     function set_splitting_rules(obj, rules)
@@ -195,49 +200,13 @@ classdef Quadtree < FEPack.FEPackObject
       children(4:4:4*N, :) = [xmidpoints, ymidpoints, nodes(:,3), nodes(:,4), newDepth];
     end
     
-    function visualize(obj, axis_lim, max_visualization_depth)
+    function compute_leaf_values(obj)
+      numLeaves = size(obj.leaves, 1);
 
-      % Visualize quadtree up to a certain depth
-      if (nargin < 3)
-        max_visualization_depth = obj.maxDepth;
-      end
-
-      % figure;
-      axis equal;
-      % axis([0 1 0 1]);
-      hold on;
-      
-      validId = (obj.leaves(:, 5) <= max_visualization_depth);
-      valid_leaves = obj.leaves(validId, :);
-
-      % Plot all nodes
-      for idI = 1:size(valid_leaves, 1)
-        node = valid_leaves(idI, :);
-        rectangle('Position', [node(1) node(2) (node(3)-node(1)) (node(4)-node(2))], 'EdgeColor', 'k');
-      end
-
-      title(sprintf('Quadtree Approximation (Depth %d)', obj.maxDepth));
-      drawnow;
-      if (nargin >= 2) && ~isempty(axis_lim)
-        xlim([axis_lim(1), axis_lim(3)]);
-        ylim([axis_lim(2), axis_lim(4)]);
-      end
-
-    end
-
-    function visualize_cache(obj, axis_lim)
-      % Visualize cached values on the quadtree mesh
-      % Uses same rendering approach as visualize_function but with cached values
-      axis equal;
-      hold on;
-      
-      % Create colormap
-      cmap = parula(256);
-      
       % Match cache points to leaves and compute mean values
-      tic;
-      leaf_vals = NaN(size(obj.leaves, 1), 1);
-      for idI = 1:size(obj.leaves, 1)
+      obj.leaf_vals = NaN(numLeaves, 1);
+
+      for idI = 1:numLeaves
         node = obj.leaves(idI, :);
         
         % Find all cache points within this leaf
@@ -247,59 +216,62 @@ classdef Quadtree < FEPack.FEPackObject
                   obj.cache_coords(:, 2) <= node(4);
         
         if any(in_leaf)
-            leaf_vals(idI) = mean(obj.cache_vals(in_leaf));
+          obj.leaf_vals(idI) = mean(obj.cache_vals(in_leaf));
         end
       end
-      tps = toc;
-      fprintf('Time 1: %f seconds.\n', tps);
 
-      % Calculate value range using only valid leaves
-      valid_vals = leaf_vals(~isnan(leaf_vals));
-      if isempty(valid_vals)
+      if all(isnan(obj.leaf_vals))
         error('No cached values found in quadtree leaves');
       end
-      
-      max_val = prctile(valid_vals, 98); % 98th percentile to avoid outliers
-      min_val = min(valid_vals);
-      
-      % Plot each cell with color based on cached values
-      tic;
-      for idI = 1:size(obj.leaves, 1)
-        node = obj.leaves(idI, :);
-        if ~isnan(leaf_vals(idI))
-          % Normalize to colormap index
-          cidx = round(255 * (leaf_vals(idI) - min_val) / (max_val - min_val)) + 1;
-          cidx = max(1, min(256, cidx)); % Clamp to valid range
-          
-          % Draw rectangle
-          rectangle('Position', [node(1),  node(2),...
-                                 node(3) - node(1),...
-                                 node(4) - node(2)],...
-                    'FaceColor', cmap(cidx, :), ...
-                    'EdgeColor', 'none');
-        else
-          % Draw gray rectangle
-          rectangle('Position', [node(1),  node(2),...
-                                 node(3) - node(1),...
-                                 node(4) - node(2)],...
-                    'FaceColor', [128 128 128]/255, ...
-                    'EdgeColor', 'none');
-        end
-      end
-      tps = toc;
-      fprintf('Time 2: %f seconds.\n', tps);
-      
-      if (nargin >= 2)
-        xlim([axis_lim(1), axis_lim(3)]);
-        ylim([axis_lim(2), axis_lim(4)]);
+    end
+
+    function visualize(obj)
+      axis equal;
+      hold on;
+
+      patch([obj.leaves(:, 1), obj.leaves(:, 3),...
+             obj.leaves(:, 3), obj.leaves(:, 1)].',...
+            [obj.leaves(:, 2), obj.leaves(:, 2),...
+             obj.leaves(:, 4), obj.leaves(:, 4)].',...
+             NaN(size(obj.leaves, 1), 1));
+    end
+
+    function visualize_cache(obj, fun)
+      % Visualize cached values on the quadtree mesh
+      % Uses same rendering approach as visualize_function but with cached values
+      if (nargin < 2)
+        fun = @(x) x;
       end
 
-      % Add colorbar
-      colormap(cmap);
-      colorbar;
+      axis equal;
+      hold on;
       
-      title(sprintf('Cached Values Visualization (%d points)', size(obj.cache_coords, 1)));
-      hold off;
+      % Patch leaves
+      val_is_NaN   = isnan(obj.leaf_vals);
+      valid_leaves = obj.leaves(~val_is_NaN, :);
+      valid_vals   = fun(obj.leaf_vals(~val_is_NaN));
+
+      patch([valid_leaves(:, 1), valid_leaves(:, 3),...
+             valid_leaves(:, 3), valid_leaves(:, 1)].',...
+            [valid_leaves(:, 2), valid_leaves(:, 2),...
+             valid_leaves(:, 4), valid_leaves(:, 4)].',...
+             valid_vals,...
+            'EdgeColor', 'none');
+      
+      colormap;
+      maxVal = prctile(valid_vals, 98); % 98th percentile to avoid outliers
+      minVal = min(valid_vals);
+      clim([minVal, maxVal]);
+
+      % Patch leaves with NaN values
+      colNaN = [128 128 128]/255;
+      NaN_leaves = obj.leaves(val_is_NaN, :);
+      patch([NaN_leaves(:, 1), NaN_leaves(:, 3),...
+             NaN_leaves(:, 3), NaN_leaves(:, 1)].',...
+            [NaN_leaves(:, 2), NaN_leaves(:, 2),...
+             NaN_leaves(:, 4), NaN_leaves(:, 4)].',...
+             colNaN,...
+            'EdgeColor', 'none');
     end
   end
 end

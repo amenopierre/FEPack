@@ -20,7 +20,7 @@ function solve_TFB_waveguide(idBEGIN, idEND, numNodes, cheminDonnees)
 
     % The Floquet-Bloch transform of the boundary data
     fprintf('Calcul TFB donnee de saut\n');
-    jumpData_FB = @(x) BlochTransform(x, FloquetVar, G3D, infiniteDirection);
+    jumpData_FB = @(x) FEPack.tools.BlochTransform(x, FloquetVar, G3D, infiniteDirection);
 
     % Compute the Floquet-Bloch transform of the solution
     fprintf('Calcul solution probleme de transmission\n');

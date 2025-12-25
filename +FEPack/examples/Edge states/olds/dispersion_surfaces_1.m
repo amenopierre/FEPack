@@ -14,21 +14,22 @@ Khs = (k1 - k2) / 3; % High-symmetry quasi-momentum
 brillouinVerts = [Khs, -Khs + k1, Khs + k2, -Khs, Khs - k1, -Khs - k2];
 
 % Honeycomb lattice potential
-A = [0; 0];
-B = [1/sqrt(3); 0];
-ampA = 10;
-ampB = 0;   % Attention : V n'est pas paire si ampB ≠ 0
+A = [0; 0] + [1/sqrt(3); 0];
+B = [1/sqrt(3); 0] + [1/sqrt(3); 0];
+ampA = 1;
+ampB = 1;   % Attention : V n'est pas paire si ampB ≠ 0
 % Vpot = @(x) zeros(size(x, 1), 1);
 Vpot = @(x) atomicPotential(x, v1, v2, A, B, ampA, ampB);
 % Vpot = @(x) opticalPotential(x, k1, k2, true);
 % Vpot = @(x) 10*trigonometricPolynomial(x, k1, k2, true);
 
-Wpot = @(x) opticalPotential(x, k1, k2, false);
+Wpot = @(x) atomicPotential(x, v1, v2, A, B, 0.5, -0.5);
+% Wpot = @(x) opticalPotential(x, k1, k2, false);
 % Wpot = @(x) trigonometricPolynomial(x, k1, k2, false);
-delta = 0;
+delta = 1;
 Qpot = @(x) Vpot(x) + delta * Wpot(x);
-
-numNodesX = 50;
+%
+numNodesX = 64;
 meshXY = meshes.MeshRectangle(1, [0 1], [0 1], numNodesX, numNodesX);
 cellXY = meshXY.domain('volumic');
 edge0x = meshXY.domain('xmin'); N0x = edge0x.numPoints;
@@ -36,27 +37,37 @@ edge1x = meshXY.domain('xmax'); N1x = edge1x.numPoints;
 edge0y = meshXY.domain('ymin'); N0y = edge0y.numPoints;
 edge1y = meshXY.domain('ymax'); N1y = edge1y.numPoints;
 
-% %% Represent coefficient
-% numX = 2;
-% numY = 2;
-% R = [v1, v2];
-% transQpot = @(x) Qpot((R * x(:, 1:2)')');
-% figure;
-% for idX = -numX:numX-1
-%   for idY = -numY:numY-1
-%     X = meshXY.points(:, 1) + idX;
-%     Y = meshXY.points(:, 2) + idY;
+%% Represent coefficient
+numX = 2;
+numY = 2;
+R = [v1, v2];
+%%%%%%%%%%%%%%%%%%
+r = -sqrt(2);
+k2edge = -r * k1 + k2;
+Qpot = @(x) Vpot(x) + delta * sign(x(:, 1:2) * k2edge) .* Wpot(x);
+%%%%%%%%%%%%%%%%%%
+transQpot = @(x) Qpot((R * x(:, 1:2)')');
+figure;
+for idX = -numX:numX-1
+  for idY = -numY:numY-1
+    X = meshXY.points(:, 1) + idX;
+    Y = meshXY.points(:, 2) + idY;
 
-%     % trisurf(meshXY.triangles, X, Y, Qpot([X, Y]));
-%     trisurf(meshXY.triangles, X, Y, transQpot([X, Y])); 
-%     hold on;
-%     shading interp;
-%     view(2);
-%     set(gca, 'DataAspectRatio', [1 1 1]);
-%   end
-% end
-% error();
-% %%
+    trisurf(meshXY.triangles, X, Y, Qpot([X, Y]));
+    % trisurf(meshXY.triangles, X, Y, transQpot([X, Y])); 
+    hold on;
+    shading interp;
+    view(2);
+    set(gca, 'DataAspectRatio', [1 1 1]);
+  end
+end
+plot3([0, v1(1)], [0, v1(2)], [10, 10], 'w', 'LineWidth', 2); 
+plot3([0, v2(1)], [0, v2(2)], [10, 10], 'w', 'LineWidth', 2); 
+plot3([v1(1)+v2(1), v1(1)], [v1(2)+v2(2), v1(2)], [10, 10], 'w', 'LineWidth', 2); 
+plot3([v1(1)+v2(1), v2(1)], [v1(2)+v2(2), v2(2)], [10, 10], 'w', 'LineWidth', 2); 
+
+error();
+%%
 
 % Number of eigenvalues to compute
 numEVP = 4;
@@ -193,8 +204,10 @@ function val = atomicPotential(x, v1, v2, A, B, ampA, ampB)
   XmodA = (R * (mod(T * (x(:, 1:2).' - A) + 0.5, 1) - 0.5)).';
   XmodB = (R * (mod(T * (x(:, 1:2).' - B) + 0.5, 1) - 0.5)).';
 
-  val = ampA * FEPack.tools.cutoff(sqrt(XmodA(:, 1).^2 + XmodA(:, 2).^2), -0.4*normR, 0.4*normR) +...
-        ampB * FEPack.tools.cutoff(sqrt(XmodB(:, 1).^2 + XmodB(:, 2).^2), -0.2*normR, 0.2*normR);
+  % val = ampA * FEPack.tools.cutoff(sqrt(XmodA(:, 1).^2 + XmodA(:, 2).^2), -0.2*normR, 0.2*normR) +...
+  %       ampB * FEPack.tools.cutoff(sqrt(XmodB(:, 1).^2 + XmodB(:, 2).^2), -0.2*normR, 0.2*normR);
+  val = ampA * (sqrt(XmodA(:, 1).^2 + XmodA(:, 2).^2) <= 0.1*normR) +...
+        ampB * (sqrt(XmodB(:, 1).^2 + XmodB(:, 2).^2) <= 0.1*normR);
 
 end
 

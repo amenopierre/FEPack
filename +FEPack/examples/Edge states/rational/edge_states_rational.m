@@ -1,12 +1,16 @@
-function val = edge_states_rational(...
+function [val, eigvals] = edge_states_rational(...
   dispersion_points,...
   op_pos, mesh_pos, init_BCstruct_pos,...
   op_neg, mesh_neg, init_BCstruct_neg,...
   op_int, mesh_int, problem_type,...
-  parallel_use, parallel_numcores, plot_coefficients)
+  parallel_use, parallel_numcores, plot_coefficients, stop_at_nans)
   
   %% [mesh, val] = EDGE_STATES_RATIONAL()
   % 
+
+  if (nargin < 14)
+    stop_at_nans = false;
+  end
 
   %% Plot coefficients
   if (nargin >= 13 && plot_coefficients)
@@ -14,11 +18,11 @@ function val = edge_states_rational(...
     numX = 2;
     numY = 2;
 
-    if isa(op_int.funP, 'function_handle')
-      funP = op_int.funP;
-    else
-      funP = @(x) ones(size(x, 1), 1) * op_int.funP;
-    end
+    % if isa(op_int.funP, 'function_handle')
+    %   funP = op_int.funP;
+    % else
+    %   funP = @(x) ones(size(x, 1), 1) * op_int.funP;
+    % end
 
     if isa(op_int.funQ, 'function_handle')
       funQ = op_int.funQ;
@@ -35,18 +39,18 @@ function val = edge_states_rational(...
         X = mesh_pos.points(:, 1) + idX;
         Y = mesh_pos.points(:, 2) + idY;
 
-        % P
-        subplot(1, 2, 1);
-        trisurf(mesh_pos.triangles, X, Y, funP([X, Y]));
-        hold on;
-        shading interp;
-        view(2);
-        set(gca, 'DataAspectRatio', [1 1 1], 'FontSize', 16);
-        colorbar('TickLabelInterpreter', 'latex');
-        xlabel('$P$');
+        % % P
+        % subplot(1, 2, 1);
+        % trisurf(mesh_pos.triangles, X, Y, funP([X, Y]));
+        % hold on;
+        % shading interp;
+        % view(2);
+        % set(gca, 'DataAspectRatio', [1 1 1], 'FontSize', 16);
+        % colorbar('TickLabelInterpreter', 'latex');
+        % xlabel('$P$');
 
         % Q
-        subplot(1, 2, 2);
+        % subplot(1, 2, 2);
         trisurf(mesh_pos.triangles, X, Y, funQ([X, Y]));
         hold on;
         shading interp;
@@ -119,6 +123,7 @@ function val = edge_states_rational(...
   % Output initialization
   numD = size(dispersion_points, 1);
   val = zeros(numD, 1);
+  eigvals = cell(numD, 1);
 
   % Loop
   if (parallel_use)
@@ -185,51 +190,57 @@ function val = edge_states_rational(...
         tps = toc;
         fprintf('(-) guide elapsed time: %f seconds.\n', idI, tps);
         
-        if strcmpi(problem_type, 'interior')
+        if ~(stop_at_nans)
+          if strcmpi(problem_type, 'interior')
 
-          % ========= Interior problem
-          tic;
-          AAint = mat_int_gradu_gradv +...
-                +  1i * kpar    * mat_int_vectu_gradv...
-                -  1i * kpar    * mat_int_gradu_vectv...
-                + (kpar * kpar) * mat_int_vectu_vectv...
-                + mat_int_funQ_u_v...
-                - lambda * mat_int_funR_u_v;
+            % ========= Interior problem
+            tic;
+            AAint = mat_int_gradu_gradv +...
+                  +  1i * kpar    * mat_int_vectu_gradv...
+                  -  1i * kpar    * mat_int_gradu_vectv...
+                  + (kpar * kpar) * mat_int_vectu_vectv...
+                  + mat_int_funQ_u_v...
+                  - lambda * mat_int_funR_u_v;
 
-          % Coefficients associated to boundary condition
-          Nbpos = size(boundary_op_pos, 1);
-          Nbneg = size(boundary_op_neg, 1);
+            % Coefficients associated to boundary condition
+            Nbpos = size(boundary_op_pos, 1);
+            Nbneg = size(boundary_op_neg, 1);
 
-          BCu_int_pos = (BCstruct_pos.BCu' * eye(Nbpos) + BCstruct_pos.BCdu * boundary_op_pos)...
-                      \ (boundary_op_pos * BCstruct_pos.BCu - BCstruct_pos.BCdu' * eye(Nbpos));
-          BCu_int_neg = (BCstruct_neg.BCu' * eye(Nbneg) + BCstruct_neg.BCdu * boundary_op_neg)...
-                      \ (boundary_op_neg * BCstruct_neg.BCu - BCstruct_neg.BCdu' * eye(Nbneg));
+            BCu_int_pos = (BCstruct_pos.BCu' * eye(Nbpos) + BCstruct_pos.BCdu * boundary_op_pos)...
+                        \ (boundary_op_pos * BCstruct_pos.BCu - BCstruct_pos.BCdu' * eye(Nbpos));
+            BCu_int_neg = (BCstruct_neg.BCu' * eye(Nbneg) + BCstruct_neg.BCdu * boundary_op_neg)...
+                        \ (boundary_op_neg * BCstruct_neg.BCu - BCstruct_neg.BCdu' * eye(Nbneg));
 
-          SSpos = FEPack.pdes.Form.intg_TU_V(edgeYmaxInt, BCu_int_pos, BCstruct_pos.spB0, 'projection');
-          SSneg = FEPack.pdes.Form.intg_TU_V(edgeYminInt, BCu_int_neg, BCstruct_neg.spB0, 'projection');
+            SSpos = FEPack.pdes.Form.intg_TU_V(edgeYmaxInt, BCu_int_pos, BCstruct_pos.spB0, 'projection');
+            SSneg = FEPack.pdes.Form.intg_TU_V(edgeYminInt, BCu_int_neg, BCstruct_neg.spB0, 'projection');
 
-          AAint0 = PPint * (AAint - SSpos - SSneg) * PPint.';
-          tps = toc;
-          fprintf('interior domain elapsed time: %f seconds.\n', idI, tps);
+            AAint0 = PPint * (AAint - SSpos - SSneg) * PPint.';
+            tps = toc;
+            fprintf('interior domain elapsed time: %f seconds.\n', idI, tps);
 
-          % Compute infinity norm of resolvent
-          tic;
-          % val(idI) = max(max(abs(AAint0 \ eye(size(AAint0)))));
-          % val(idI) = det(AAint0); % SURTOUT PAS !
-          val(idI) = condest(AAint0);
-          tps = toc;
-          fprintf('interior domain resolvent elapsed time: %f seconds.\n', idI, tps);
+            % Compute infinity norm of resolvent
+            tic;
+            val(idI) = max(max(abs(AAint0 \ eye(size(AAint0)))));
+            % val(idI) = det(AAint0); % SURTOUT PAS !
+            % val(idI) = condest(AAint0);
+            eigvals{idI} = eig(AAint0).';
+            tps = toc;
+            fprintf('interior domain resolvent elapsed time: %f seconds.\n', idI, tps);
 
-        elseif strcmpi(problem_type, 'interface')
+          elseif strcmpi(problem_type, 'interface')
 
-          % ========= Interface problem
-          tic;
-          val(idI) = cond(boundary_op_pos + boundary_op_neg);
-          tps = toc;
-          fprintf('interface problem elapsed time: %f seconds.\n', idI, tps);
-          
+            % ========= Interface problem
+            tic;
+            val(idI) = cond(boundary_op_pos + boundary_op_neg);
+            eigvals{idI} = eig(boundary_op_pos + boundary_op_neg);
+            tps = toc;
+            fprintf('interface problem elapsed time: %f seconds.\n', idI, tps);
+            
+          else
+            error(['Unrecognized value ''', problem_type, ''' for problem_type. Possible values are ''interior'' and ''interface''.']);
+          end
         else
-          error(['Unrecognized value ''', problem_type, ''' for problem_type. Possible values are ''interior'' and ''interface''.']);
+          eigvals{idI} = NaN;
         end
 
       catch err_obj
@@ -239,6 +250,7 @@ function val = edge_states_rational(...
           (strcmp(err_obj.message(1:num_err), err_prefix))
           % Some eigenvalues of the Riccati operator are on the unit circle
           val(idI) = NaN;
+          eigvals{idI} = NaN;
         else
           % Unknown error
           rethrow(err_obj);
@@ -272,8 +284,8 @@ function val = edge_states_rational(...
 
         % Boundary condition
         BCstruct_pos = init_BCstruct_pos;
-        BCstruct_pos.BCu  = 1i*lambda;
-        BCstruct_pos.BCdu = 1;
+        BCstruct_pos.BCu  = 1; % 1i*lambda;
+        BCstruct_pos.BCdu = 0;
 
         % Half-guide problem
         [~, ~, ~, ~, ~, BCstruct_pos, boundary_op_pos] = PeriodicHalfGuideBVP(mesh_pos, +1, 2, AApos, BCstruct_pos, 0, opts);
@@ -292,59 +304,65 @@ function val = edge_states_rational(...
 
         % Boundary condition
         BCstruct_neg = init_BCstruct_neg;
-        BCstruct_neg.BCu  = -1i*lambda;
-        BCstruct_neg.BCdu = 1;
+        BCstruct_neg.BCu  = 1;%-1i*lambda;
+        BCstruct_neg.BCdu = 0;
 
         % Half-guide problem
         [~, ~, ~, ~, ~, BCstruct_neg, boundary_op_neg] = PeriodicHalfGuideBVP(mesh_neg, -1, 2, AAneg, BCstruct_neg, 0, opts);
         tps = toc;
         fprintf('%d (-) guide elapsed time: %f seconds.\n', idI, tps);
 
-        if strcmpi(problem_type, 'interior')
+        if ~(stop_at_nans)
+          if strcmpi(problem_type, 'interior')
+            
+            % ========= Interior problem
+            tic;
+            AAint = mat_int_gradu_gradv +...
+                  +  1i * kpar    * mat_int_vectu_gradv...
+                  -  1i * kpar    * mat_int_gradu_vectv...
+                  + (kpar * kpar) * mat_int_vectu_vectv...
+                  + mat_int_funQ_u_v...
+                  - lambda * mat_int_funR_u_v;
+
+            % Coefficients associated to boundary condition
+            Nbpos = size(boundary_op_pos, 1);
+            Nbneg = size(boundary_op_neg, 1);
+
+            BCu_int_pos = (BCstruct_pos.BCu' * eye(Nbpos) + BCstruct_pos.BCdu * boundary_op_pos)...
+                        \ (boundary_op_pos * BCstruct_pos.BCu - BCstruct_pos.BCdu' * eye(Nbpos));
+            BCu_int_neg = (BCstruct_neg.BCu' * eye(Nbneg) + BCstruct_neg.BCdu * boundary_op_neg)...
+                        \ (boundary_op_neg * BCstruct_neg.BCu - BCstruct_neg.BCdu' * eye(Nbneg));
+
+            SSpos = FEPack.pdes.Form.intg_TU_V(edgeYmaxInt, BCu_int_pos, BCstruct_pos.spB0, 'projection');
+            SSneg = FEPack.pdes.Form.intg_TU_V(edgeYminInt, BCu_int_neg, BCstruct_neg.spB0, 'projection');
+
+            AAint0 = PPint * (AAint - SSpos - SSneg) * PPint.';
+            tps = toc;
+            fprintf('%d interior domain elapsed time: %f seconds.\n', idI, tps);
+
+            % Compute infinity norm of resolvent
+            tic;
+            % val(idI) = max(max(abs(AAint0 \ eye(size(AAint0)))));
+            % val(idI) = det(AAint0); % SURTOUT PAS !
+            val(idI) = condest(AAint0);
+            eigvals{idI} = eigs(AAint0, size(AAint0, 1)).';
+            tps = toc;
+            fprintf('%d interior domain resolvent elapsed time: %f seconds.\n', idI, tps);
+
+          elseif strcmpi(problem_type, 'interface')
+
+            % ========= Interface problem
+            tic;
+            val(idI) = cond(boundary_op_pos + boundary_op_neg);
+            eigvals{idI} = eig(boundary_op_pos + boundary_op_neg);
+            tps = toc;
+            fprintf('%d interface problem elapsed time: %f seconds.\n', idI, tps);
           
-          % ========= Interior problem
-          tic;
-          AAint = mat_int_gradu_gradv +...
-                +  1i * kpar    * mat_int_vectu_gradv...
-                -  1i * kpar    * mat_int_gradu_vectv...
-                + (kpar * kpar) * mat_int_vectu_vectv...
-                + mat_int_funQ_u_v...
-                - lambda * mat_int_funR_u_v;
-
-          % Coefficients associated to boundary condition
-          Nbpos = size(boundary_op_pos, 1);
-          Nbneg = size(boundary_op_neg, 1);
-
-          BCu_int_pos = (BCstruct_pos.BCu' * eye(Nbpos) + BCstruct_pos.BCdu * boundary_op_pos)...
-                      \ (boundary_op_pos * BCstruct_pos.BCu - BCstruct_pos.BCdu' * eye(Nbpos));
-          BCu_int_neg = (BCstruct_neg.BCu' * eye(Nbneg) + BCstruct_neg.BCdu * boundary_op_neg)...
-                      \ (boundary_op_neg * BCstruct_neg.BCu - BCstruct_neg.BCdu' * eye(Nbneg));
-
-          SSpos = FEPack.pdes.Form.intg_TU_V(edgeYmaxInt, BCu_int_pos, BCstruct_pos.spB0, 'projection');
-          SSneg = FEPack.pdes.Form.intg_TU_V(edgeYminInt, BCu_int_neg, BCstruct_neg.spB0, 'projection');
-
-          AAint0 = PPint * (AAint - SSpos - SSneg) * PPint.';
-          tps = toc;
-          fprintf('%d interior domain elapsed time: %f seconds.\n', idI, tps);
-
-          % Compute infinity norm of resolvent
-          tic;
-          % val(idI) = max(max(abs(AAint0 \ eye(size(AAint0)))));
-          % val(idI) = det(AAint0); % SURTOUT PAS !
-          val(idI) = condest(AAint0);
-          tps = toc;
-          fprintf('%d interior domain resolvent elapsed time: %f seconds.\n', idI, tps);
-
-        elseif strcmpi(problem_type, 'interface')
-
-          % ========= Interface problem
-          tic;
-          val(idI) = cond(boundary_op_pos + boundary_op_neg);
-          tps = toc;
-          fprintf('%d interface problem elapsed time: %f seconds.\n', idI, tps);
-        
+          else
+            error(['Unrecognized value ''', problem_type, ''' for problem_type. Possible values are ''interior'' and ''interface''.']);
+          end
         else
-          error(['Unrecognized value ''', problem_type, ''' for problem_type. Possible values are ''interior'' and ''interface''.']);
+          eigvals{idI} = NaN;
         end
 
       catch err_obj
@@ -354,6 +372,7 @@ function val = edge_states_rational(...
           (strcmp(err_obj.message(1:num_err), err_prefix))
           % Some eigenvalues of the Riccati operator are on the unit circle
           val(idI) = NaN;
+          eigvals{idI} = NaN;
         else
           % Unknown error
           rethrow(err_obj);

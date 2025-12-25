@@ -240,7 +240,7 @@ parfor idFB = 1:numFloquetPoints
   Lambda_neg = solguideNeg.Lambda;
 
   % Rhs
-  jumpData_FB = @(x) BlochTransform(x, FloquetVar, G3D, 1, period, 1000);
+  jumpData_FB = @(x) FEPack.tools.BlochTransform(x, FloquetVar, G3D, 1, period, 1000);
   GG = spBX_FE_to_spectral * jumpData_FB(pointsYZ);
 
   % The minus sign comes from the definition of the Lambda
@@ -248,7 +248,7 @@ parfor idFB = 1:numFloquetPoints
   soltrace.vec = -(Lambda_pos + Lambda_neg) \ GG;
 
   % Save the trace of the solution
-  parsave([nomdossier, 'sol_trace_Floquet_', num2str(idFB)], soltrace, true);
+  FEPack.tools.parsave([nomdossier, 'sol_trace_Floquet_', num2str(idFB)], soltrace, true);
 end
 
 %% Construct solution

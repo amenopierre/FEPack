@@ -200,7 +200,7 @@ function U = PeriodicHalfSpaceBVP(mesh, orientation, semiInfiniteDirection,...
     end
 
     % The Floquet-Bloch transform of the boundary data along the relevant directions
-    BCstruct.phi = @(x) BlochTransform(x, K(idFB, :), phi, infiniteDirections);
+    BCstruct.phi = @(x) FEPack.tools.BlochTransform(x, K(idFB, :), phi, infiniteDirections);
 
     % Compute the solution
     TFBU{idFB} = PeriodicHalfGuideBVP(mesh, orientation, semiInfiniteDirection, AA, BCstruct, numCellsSemiInfinite, opts);

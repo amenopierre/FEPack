@@ -80,7 +80,7 @@ numFloquetPoints = 64;
 %% Mesh
 pregenerate_mesh = 1;
 struct_mesh = 1;
-numNodes2D = 100;
+numNodes2D = 60;
 numNodes3D = 40;
 
 if pregenerate_mesh
@@ -168,8 +168,11 @@ u_v = @(rhoco) ((rhoco*u)*v);
 
 %% Compute FE elementary matrices
 % Positive side
+fprintf('Computing mat_gradu_gradv_pos...\n');
 mat_gradu_gradv_pos = FEPack.pdes.Form.intg(mesh3Dpos.domain('volumic'), gradu_gradv(mu3Dpos));
+fprintf('Computing mat_gradu_gradv_pos...\n');
 mat_gradu_vec1v_pos = FEPack.pdes.Form.intg(mesh3Dpos.domain('volumic'), gradu_vec1v(mu3Dpos));
+fprintf('Computing mat_gradu_gradv_pos...\n');
 mat_vec1u_gradv_pos = FEPack.pdes.Form.intg(mesh3Dpos.domain('volumic'), vec1u_gradv(mu3Dpos));
 mat_vec1u_vec1v_pos = FEPack.pdes.Form.intg(mesh3Dpos.domain('volumic'), vec1u_vec1v(mu3Dpos));
 mat_u_v_pos         = FEPack.pdes.Form.intg(mesh3Dpos.domain('volumic'),        u_v(rho3Dpos));
@@ -221,7 +224,7 @@ for idFB = 1:numFloquetPoints
   AAneg = mat_gradu_gradv_neg + 1i * FloquetVar * mat_vec1u_gradv_neg - 1i * FloquetVar * mat_gradu_vec1v_neg + FloquetVar * FloquetVar * mat_vec1u_vec1v_neg - (omega^2) * mat_u_v_neg;
 
   % The Floquet-Bloch transform of the boundary data
-  jumpData_FB = @(x) BlochTransform(x, FloquetVar, G3D, infiniteDirection);
+  jumpData_FB = @(x) FEPack.tools.BlochTransform(x, FloquetVar, G3D, infiniteDirection);
 
   % Compute the Floquet-Bloch transform of the solution
   TFBU{idFB} = PeriodicGuideJumpBVP(semiInfiniteDirection,...

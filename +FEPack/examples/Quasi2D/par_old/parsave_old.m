@@ -1,4 +1,4 @@
-function parsave(fname, x, is_struct, varargin)
+function FEPack.tools.parsave(fname, x, is_struct, varargin)
 
   if (is_struct)
     save(fname, '-struct', 'x', '-v7.3');

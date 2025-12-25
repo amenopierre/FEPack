@@ -140,7 +140,7 @@ for idFB = 1:opts.numFloquetPoints
   Lambda_neg = solguideNeg.Lambda;
 
   % Rhs
-  jumpData_FB = @(x) BlochTransform(x, FloquetVar, G3D, 2, opts.period);
+  jumpData_FB = @(x) FEPack.tools.BlochTransform(x, FloquetVar, G3D, 2, opts.period);
   GG = BCstruct.pos.spBX.FE_to_spectral * jumpData_FB(meshYZ.points);
     
   % The minus sign comes from the definition of the Lambda

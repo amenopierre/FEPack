@@ -1,20 +1,23 @@
 function U = PeriodicGuideBVP(infiniteDirection,...
-                              volBilinearIntg_pos, mesh_pos, BCstruct_pos, numCells_pos,...
-                              volBilinearIntg_neg, mesh_neg, BCstruct_neg, numCells_neg,...
-                              volBilinearIntg_int, volLinearIntg, mesh_int, spBint_pos, spBint_neg, opts)
+  volBilinearIntg_pos, mesh_pos, BCstruct_pos, numCells_pos,...
+  volBilinearIntg_neg, mesh_neg, BCstruct_neg, numCells_neg,...
+  volBilinearIntg_int, volLinearIntg, mesh_int, spBint_pos, spBint_neg, opts)
 
-  % PeriodicSpaceBVP
-
+  % PeriodicGuideBVP
+  if (nargin < 14)
+    opts = [];
+  end
+  
   % Preliminary set ups
   opts.solBasis = true;
 
   % Solve the problem in the positive half-guide
   % ////////////////////////////////////////////
-  [Upos, BCstruct_pos, Lambda_pos] = PeriodicHalfGuideBVP(mesh_pos, +1, infiniteDirection, volBilinearIntg_pos, BCstruct_pos, numCells_pos, opts);
+  [Upos, ~, ~, ~, ~, BCstruct_pos, Lambda_pos] = PeriodicHalfGuideBVP(mesh_pos, +1, infiniteDirection, volBilinearIntg_pos, BCstruct_pos, numCells_pos, opts);
 
   % Solve the problem in the negative half-guide
   % ////////////////////////////////////////////
-  [Uneg, BCstruct_neg, Lambda_neg] = PeriodicHalfGuideBVP(mesh_neg, -1, infiniteDirection, volBilinearIntg_neg, BCstruct_neg, numCells_neg, opts);
+  [Uneg, ~, ~, ~, ~, BCstruct_neg, Lambda_neg] = PeriodicHalfGuideBVP(mesh_neg, -1, infiniteDirection, volBilinearIntg_neg, BCstruct_neg, numCells_neg, opts);
 
   % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % N = 32;
@@ -41,7 +44,13 @@ function U = PeriodicGuideBVP(infiniteDirection,...
   else
     AAint = volBilinearIntg_int;
   end
-  LLint = FEPack.pdes.Form.intg(mesh_int.domain('volumic'), volLinearIntg);
+
+  if isa(volLinearIntg, 'FEPack.pdes.Form')
+    % Compute the FE right-hand side if not done already
+    LLint = FEPack.pdes.Form.intg(mesh_int.domain('volumic'), volLinearIntg);
+  else
+    LLint = volLinearIntg;
+  end
 
   % Find bounded directions and impose periodic condition on them
   boundedDirections = find((1:mesh_int.dimension) ~= infiniteDirection); % Bounded directions
@@ -70,8 +79,8 @@ function U = PeriodicGuideBVP(infiniteDirection,...
            'de Dirichlet. Revoir les problèmes de demi-guide considérés.'])
   end
 
-  SSpos = FEPack.pdes.Form.intg_TU_V(Sigma_pos, BCu_int_pos, 'projection');
-  SSneg = FEPack.pdes.Form.intg_TU_V(Sigma_neg, BCu_int_neg, 'projection');
+  SSpos = FEPack.pdes.Form.intg_TU_V(Sigma_pos, BCu_int_pos, BCstruct_pos.spB0, 'projection');
+  SSneg = FEPack.pdes.Form.intg_TU_V(Sigma_neg, BCu_int_neg, BCstruct_neg.spB0, 'projection');
 
   AAint = AAint - SSpos - SSneg;
 

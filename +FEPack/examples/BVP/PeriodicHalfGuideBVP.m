@@ -365,6 +365,7 @@
   else
     U = [];
   end
+  
   %% % *********************************************** %
   %  % The transmission coefficient and the derivative %
   %  % *********************************************** %
@@ -378,6 +379,7 @@
 
   Lambda = -BCstruct.BCu' * dU0 + BCstruct.BCdu' * U0;
   newBCstruct = BCstruct;
+  
 end
 
 %% % ******** %

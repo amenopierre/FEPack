@@ -61,7 +61,7 @@ function [dispmesh, val] = edge_states_irrational(...
         
         % Boundary condition
         BCstruct_pos = init_BCstruct_pos;
-        BCstruct_pos.BCu  = 1i*lambda;
+        BCstruct_pos.BCu  = 1i;%*lambda;
         BCstruct_pos.BCdu = 1;
 
         % Half-guide problem

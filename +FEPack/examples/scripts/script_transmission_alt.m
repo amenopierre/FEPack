@@ -4,7 +4,7 @@ import FEPack.*
 % profile ON
 
 %% Problem-related variables
-opts.omega = 8 + 0.1i;
+opts.omega = 8 + 0.5i;
 opts.verbose = 0;
 opts.computeSol = true;
 opts.solBasis = true;
@@ -42,8 +42,8 @@ numFloquetPoints_neg = floor(numFloquetPoints_neg / period_neg);
 %% Mesh
 struct_mesh = 1;
 numNodes_int = 20;
-numNodes_pos = 50;
-numNodes_neg = 50;
+numNodes_pos = 20;
+numNodes_neg = 20;
 
 mesh2Dpos = meshes.MeshRectangle(struct_mesh, [0 1], [0 period_pos], numNodes_pos, floor(period_pos * numNodes_pos));
 mesh2Dneg = meshes.MeshRectangle(struct_mesh, [0 -1], [0 period_neg], numNodes_neg, floor(period_neg * numNodes_neg));
@@ -203,7 +203,7 @@ end
 %% Positive half-space DtN
 TFBphiPosVec = zeros(mesh2Dpos.domain('xmin').numPoints, numBasisInt, numFloquetPoints_pos);
 for idI = 1:numBasisInt
-  TFBphiPosVec(:, idI, :) = BlochTransform(mesh2Dpos.points(mesh2Dpos.domain('xmin').IdPoints, 2),...
+  TFBphiPosVec(:, idI, :) = FEPack.tools.BlochTransform(mesh2Dpos.points(mesh2Dpos.domain('xmin').IdPoints, 2),...
                                            FloquetPoints_pos, @(x) int_basis_functions(x, idI),...
                                            1, period_pos, 1000);
 end
@@ -223,7 +223,7 @@ end
 %% Negative half-space DtN
 TFBphiNegVec = zeros(mesh2Dneg.domain('xmin').numPoints, numBasisInt, numFloquetPoints_neg);
 for idI = 1:numBasisInt
-  TFBphiNegVec(:, idI, :) = BlochTransform(mesh2Dneg.points(mesh2Dneg.domain('xmin').IdPoints, 2),...
+  TFBphiNegVec(:, idI, :) = FEPack.tools.BlochTransform(mesh2Dneg.points(mesh2Dneg.domain('xmin').IdPoints, 2),...
                                            FloquetPoints_neg, @(x) int_basis_functions(x, idI),...
                                            1, period_neg, 1000);
 end

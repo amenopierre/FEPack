@@ -26,12 +26,12 @@ volBilinearIntg = @(muco, rhoco) (muco * grad2(u)) * grad2(v) - (opts.omega^2) *
 % volBilinearIntg = @(muco, rhoco) (muco * (opts.cutvec' * grad2(u))) * (opts.cutvec' * grad2(v)) - (opts.omega^2) * ((rhoco*id(u))*id(v));
 plot_coefficients = false;
 
-N = 32;
+N = 16;
 
 %% Parameters for the positive half-guide
 %  //////////////////////////////////////
 BB = [0, 1; 0, 1]; BB(coSemiInf, 2) = +1;
-mesh_pos = meshes.MeshRectangle(structmesh, BB(1, :), BB(2, :), N, N, 1);
+mesh_pos = meshes.MeshRectangle(structmesh, BB(1, :), BB(2, :), N, N);
 
 if strcmpi(basis_functions, 'Lagrange')
   BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{2*coSemiInf});
@@ -51,7 +51,7 @@ volBilinearIntg_pos = volBilinearIntg(mu_pos, rho_pos);
 %% Parameters for the negative half-guide
 %  //////////////////////////////////////
 BB = [0, 1; 0, 1]; BB(coSemiInf, 2) = -1;
-mesh_neg = meshes.MeshRectangle(structmesh, BB(1, :), BB(2, :), N, N, 1);
+mesh_neg = meshes.MeshRectangle(structmesh, BB(1, :), BB(2, :), N, N);
 
 if strcmpi(basis_functions, 'Lagrange')
   BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{2*coSemiInf});
@@ -75,7 +75,7 @@ volBilinearIntg_neg = volBilinearIntg(mu_neg, rho_neg);
 numCellsSemiInfinite_pos = 4;
 numCellsSemiInfinite_neg = 4;
 numCellsInfinite = 3;
-numFloquetPoints = 100;
+numFloquetPoints = 20;
 
 %% Plot the coefficients and the source term
 if (false)%(plot_coefficients)
@@ -119,7 +119,7 @@ end
 
 %%
 % Compute guide solution
-U = PeriodicSpaceJumpBVP(coSemiInf, coInf,...
+U = PeriodicSpaceJumpBVP(coSemiInf, coInf, 1.0,...
                          volBilinearIntg_pos, mesh_pos, BCstruct_pos, numCellsSemiInfinite_pos,...
                          volBilinearIntg_neg, mesh_neg, BCstruct_neg, numCellsSemiInfinite_neg,...
                          G, numCellsInfinite, numFloquetPoints, opts);
