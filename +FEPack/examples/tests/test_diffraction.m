@@ -5,7 +5,7 @@ import FEPack.*
 mu_neg  = @(x) ones(size(x, 1), 1);
 rho_neg = @(x) ones(size(x, 1), 1);
 mu_pos  = @(x) ones(size(x, 1), 1);
-rho_pos = @(x) 0.5 + perCutoffCircle(x, [1; 0], [0; 1], [0.5, 0.5], [-0.2, 0.2]);
+rho_pos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], [0; 1], [0.5, 0.5], [-0.2, 0.2]);
 
 opts.omega = 4 + 0.1i;
 opts.computeSol = true;

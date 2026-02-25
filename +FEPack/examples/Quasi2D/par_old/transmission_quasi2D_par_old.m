@@ -95,8 +95,8 @@
       % funperiod = opts.period;
       % opts.period = 1;
 
-      rho2DposCell = @(x) 0.5 + perCutoffCircle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
-      rho2DnegCell = @(x) 0.5 + perCutoffCuboid(x, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+      rho2DposCell = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
+      rho2DnegCell = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
       
       % rho_eff_pos = integral2(@(X, Y) reshape(rho2DposCell([X(:), Y(:)]), size(X)), 0, 1, 0, period_posFun) / period_posFun;
       % rho_eff_neg = integral2(@(X, Y) reshape(rho2DnegCell([X(:), Y(:)]), size(X)), 0, 1, 0, period_negFun) / period_negFun;
@@ -130,7 +130,7 @@
       rho2Dpos = @(x) ones(size(x, 1), 1);
       rho2Dneg = @(x) 2 * ones(size(x, 1), 1);
     else
-      rho2Dpos = @(x) 0.5 + perCutoffCircle(x/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
+      rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
       rho2Dneg = @(x) ones(size(x, 1), 1);
     end
 

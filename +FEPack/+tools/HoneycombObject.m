@@ -1,10 +1,10 @@
 %> @file HoneycombObject.m
-%> @brief Contains the +applications.HoneycombObject class.
+%> @brief Contains the +tools.HoneycombObject class.
 % =========================================================================== %
 %> @brief class for examples of honeycomb potentials
 % =========================================================================== %
 classdef HoneycombObject < FEPack.FEPackObject
-  % FEPack.applications.HoneycombObject < FEPack.FEPackObject
+  % FEPack.tools.HoneycombObject < FEPack.FEPackObject
 
   properties (SetAccess = public)
 
@@ -68,11 +68,11 @@ classdef HoneycombObject < FEPack.FEPackObject
       % V
       if strcmpi(typeV, 'atomic')
 
-        obj.V = @(x) FEPack.tools.atomicPotential(x, obj.vecPer1, obj.vecPer2);
+        obj.V = @(x) FEPack.tools.FUN_atomic_potential(x, obj.vecPer1, obj.vecPer2);
 
       elseif strcmpi(typeV, 'optical')
 
-        obj.V = @(x) FEPack.tools.opticalPotential(x, obj.dualVec1, obj.dualVec2, true);
+        obj.V = @(x) FEPack.tools.FUN_optical_potential(x, obj.dualVec1, obj.dualVec2, true);
 
       elseif strcmpi(typeV, 'trigonometric')
 
@@ -99,11 +99,11 @@ classdef HoneycombObject < FEPack.FEPackObject
       % A
       if strcmpi(typeA, 'atomic')
 
-        obj.A = @(x) FEPack.tools.atomicPotential(x, obj.vecPer1, obj.vecPer2);
+        obj.A = @(x) FEPack.tools.FUN_atomic_potential(x, obj.vecPer1, obj.vecPer2);
 
       elseif strcmpi(typeA, 'optical')
 
-        obj.A = @(x) FEPack.tools.opticalPotential(x, obj.dualVec1, obj.dualVec2, true);
+        obj.A = @(x) FEPack.tools.FUN_optical_potential(x, obj.dualVec1, obj.dualVec2, true);
 
       elseif strcmpi(typeA, 'trigonometric')
 
@@ -130,7 +130,7 @@ classdef HoneycombObject < FEPack.FEPackObject
       % W
       if strcmpi(typeW, 'optical')
 
-        obj.W = @(x) FEPack.tools.opticalPotential(x, obj.dualVec1, obj.dualVec2, false);
+        obj.W = @(x) FEPack.tools.FUN_optical_potential(x, obj.dualVec1, obj.dualVec2, false);
 
       elseif strcmpi(typeW, 'trigonometric')
 

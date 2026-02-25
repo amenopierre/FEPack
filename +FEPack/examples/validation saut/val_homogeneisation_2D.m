@@ -62,7 +62,7 @@ function homogeneisation_2D(freq, period, suffix)
     BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{2*coSemiInf});
     BCstruct_pos.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{2*coSemiInf-1});
   else
-    FourierIds = [0 0]; FourierIds(3-coSemiInf) = N/4;
+    FourierIds = [0 0]; FourierIds(3-coSemiInf) = floor(N/4);
     BCstruct_pos.spB0 = spaces.FourierBasis(mesh_pos.domains{2*coSemiInf}, FourierIds);
     BCstruct_pos.spB1 = spaces.FourierBasis(mesh_pos.domains{2*coSemiInf-1}, FourierIds);
   end
@@ -84,7 +84,7 @@ function homogeneisation_2D(freq, period, suffix)
     BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{2*coSemiInf});
     BCstruct_neg.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{2*coSemiInf-1});
   else
-    FourierIds = [0 0]; FourierIds(3-coSemiInf) = N/4;
+    FourierIds = [0 0]; FourierIds(3-coSemiInf) = floor(N/4);
     BCstruct_neg.spB0 = spaces.FourierBasis(mesh_neg.domains{2*coSemiInf}, FourierIds);
     BCstruct_neg.spB1 = spaces.FourierBasis(mesh_neg.domains{2*coSemiInf-1}, FourierIds);
   end

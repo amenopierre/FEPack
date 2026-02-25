@@ -63,8 +63,8 @@ if strcmpi(problem_setting, 'A')
     rho2Dpos = @(x) ones(size(x, 1), 1);
     rho2Dneg = @(x) 2 * ones(size(x, 1), 1);
   else
-    rho2DposCell = @(x) 0.5 + perCutoffCircle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
-    rho2DnegCell = @(x) 0.5 + perCutoffCuboid(x, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+    rho2DposCell = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
+    rho2DnegCell = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
     
     rho2Dpos = @(x) rho2DposCell(x / opts.period);
     rho2Dneg = @(x) rho2DnegCell(x / opts.period);
@@ -128,10 +128,10 @@ else
     rho2Dpos = @(x) ones(size(x, 1), 1);
     rho2Dneg = @(x) 2 * ones(size(x, 1), 1);
   else
-    % rho2DposInit = @(x) 0.5 + perCutoffCircle((rotmat * x')'/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
-    % rho2DposInit = @(x) 0.5 + perCutoffCircle((invRotmat * x')'/opts.period, [1; 0], [0; 1], [0.4, 0.6], [-0.4, 0.4]);
+    % rho2DposInit = @(x) 0.5 + tools.FUN_per_cutoff_circle((rotmat * x')'/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
+    % rho2DposInit = @(x) 0.5 + tools.FUN_per_cutoff_circle((invRotmat * x')'/opts.period, [1; 0], [0; 1], [0.4, 0.6], [-0.4, 0.4]);
 
-    rho2DposInit = @(x) 0.5 + perCutoffKite((invRotmat * x')'/opts.period, [1; 0], [0; 1], [0.5, 0.5], 1.5*[1, 1.3, 1.5]/6);
+    rho2DposInit = @(x) 0.5 + tools.FUN_per_cutoff_kite((invRotmat * x')'/opts.period, [1; 0], [0; 1], [0.5, 0.5], 1.5*[1, 1.3, 1.5]/6);
     rho2Dneg = @(x) ones(size(x, 1), 1);
 
     rho2Dpos = @(x) rho2DposInit((invT * x')');

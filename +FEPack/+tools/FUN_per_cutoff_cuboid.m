@@ -1,5 +1,5 @@
-function val = perCutoffCuboid(x, vecperA, vecperB, centre, BBx, BBy, sigmaX, sigmaY)
-  % function val = perCutoffCuboid(x, vecperA, vecperB, centre, BBx, BBy, sigmaX, sigmaY)
+function val = FUN_per_cutoff_cuboid(x, vecperA, vecperB, centre, BBx, BBy, sigmaX, sigmaY)
+  % function val = FUN_per_cutoff_cuboid(x, vecperA, vecperB, centre, BBx, BBy, sigmaX, sigmaY)
   % defines a 2D periodic function such that in a cell of periodicity,
   % one has a cutoff function with a support in a parallelogram.
   %

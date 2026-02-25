@@ -26,8 +26,8 @@ if (idtest == 1)
   period_posFun = 1;
   period_negFun = sqrt(2);
 
-  rho2Dpos = @(x) 0.5 + perCutoffCircle(x/opts.period, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
-  rho2Dneg = @(x) 0.5 + perCutoffCuboid(x/opts.period, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x/opts.period, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.4, 0.4]);
+  rho2Dneg = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x/opts.period, [1; 0], [0; period_negFun], [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
 
   vecperfunpos = [0, period_posFun];
   vecperfunneg = [0, period_negFun];
@@ -36,7 +36,7 @@ elseif (idtest == 2)
 
   opts.omega = 8 + 0.25i;
   vecperFun = [cos(3*pi/5), sin(3*pi/5)];
-  rho2Dpos = @(x) 0.5 + perCutoffCircle(x/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x/opts.period, [1; 0], vecperFun, [0.5, 0.5], [-0.4, 0.4]);
   rho2Dneg = @(x) ones(size(x, 1), 1);
 
   vecperfunpos = vecperFun;
@@ -51,8 +51,8 @@ elseif (idtest == 3)
   mu2Dpos =  @(x) ones(size(x, 1), 1);
   mu2Dneg  = @(x) ones(size(x, 1), 1);
 
-  rho2Dpos = @(x) 0.5 + perCutoffCircle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
-  rho2Dneg = @(x) 0.5 + perCutoffCuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
+  rho2Dneg = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
 
 elseif (idtest == 4)
 
@@ -63,8 +63,8 @@ elseif (idtest == 4)
   mu2Dpos =  @(x) ones(size(x, 1), 1);
   mu2Dneg  = @(x) ones(size(x, 1), 1);
 
-  rho2Dpos = @(x) 0.5 + perCutoffCircle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
-  rho2Dneg = @(x) 0.5 + perCutoffCuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
+  rho2Dneg = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
 
 elseif (idtest == 5)
 
@@ -75,8 +75,8 @@ elseif (idtest == 5)
   mu2Dpos =  @(x) ones(size(x, 1), 1);
   mu2Dneg  = @(x) ones(size(x, 1), 1);
 
-  rho2Dpos = @(x) 0.5 + perCutoffCircle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
-  rho2Dneg = @(x) 0.5 + perCutoffCuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], vecperfunpos, [0.5, 0.5], [-0.4, 0.4]);
+  rho2Dneg = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], vecperfunneg, [0.5, 0.5], [-0.25, 0.25], [-0.25, 0.25], 0.5, 1);
 
 end
 

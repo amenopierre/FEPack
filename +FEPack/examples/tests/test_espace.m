@@ -40,7 +40,7 @@ if strcmpi(basis_functions, 'Lagrange')
   BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{2*coSemiInf});
   BCstruct_pos.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{2*coSemiInf-1});
 else
-  FourierIds = [0 0]; FourierIds(3-coSemiInf) = N/4;
+  FourierIds = [0 0]; FourierIds(3-coSemiInf) = floor(N/4);
   BCstruct_pos.spB0 = spaces.FourierBasis(mesh_pos.domains{2*coSemiInf}, FourierIds);
   BCstruct_pos.spB1 = spaces.FourierBasis(mesh_pos.domains{2*coSemiInf-1}, FourierIds);
 end
@@ -61,7 +61,7 @@ if strcmpi(basis_functions, 'Lagrange')
   BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{2*coSemiInf});
   BCstruct_neg.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{2*coSemiInf-1});
 else
-  FourierIds = [0 0]; FourierIds(3-coSemiInf) = N/4;
+  FourierIds = [0 0]; FourierIds(3-coSemiInf) = floor(N/4);
   BCstruct_neg.spB0 = spaces.FourierBasis(mesh_neg.domains{2*coSemiInf}, FourierIds);
   BCstruct_neg.spB1 = spaces.FourierBasis(mesh_neg.domains{2*coSemiInf-1}, FourierIds);
 end
@@ -82,7 +82,7 @@ if strcmpi(basis_functions, 'Lagrange')
   spBint_neg = FEPack.spaces.PeriodicLagrangeBasis(mesh_int.domains{2*coSemiInf});
   spBint_pos = FEPack.spaces.PeriodicLagrangeBasis(mesh_int.domains{2*coSemiInf-1});
 else
-  FourierIds = [0 0]; FourierIds(3-coSemiInf) = N/4;
+  FourierIds = [0 0]; FourierIds(3-coSemiInf) = floor(N/4);
   spBint_pos = spaces.FourierBasis(mesh_int.domains{2*coSemiInf}, FourierIds);
   spBint_neg = spaces.FourierBasis(mesh_int.domains{2*coSemiInf-1}, FourierIds);
 end

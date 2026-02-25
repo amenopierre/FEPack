@@ -1,7 +1,7 @@
 % Solve 2D time dependent Schrödinger with Backward Euler
 clear; clc;
 
-HcObj = FEPack.applications.HoneycombObject('none', 'none');
+HcObj = FEPack.tools.HoneycombObject('none', 'none');
 HcObj.V = @(x) 10 * cos(x(:, 1:2) *  HcObj.dualVec1) +...
                10 * cos(x(:, 1:2) *  HcObj.dualVec2) +...
                10 * cos(x(:, 1:2) * (HcObj.dualVec1  + HcObj.dualVec2));

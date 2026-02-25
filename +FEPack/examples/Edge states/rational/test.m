@@ -1,6 +1,6 @@
 % Compute dispersion curves associated
 % to a honeycomb lattice potential
-clear; clc;
+clear; clc; close all;
 import FEPack.*
 
 % Lattice vectors
@@ -16,10 +16,11 @@ brillouinVerts = [Khs, -Khs + k1, Khs + k2, -Khs, Khs - k1, -Khs - k2];
 % Honeycomb lattice potential
 A = [0; 0];
 B = [1/sqrt(3); 0];
+% A = -0.5*B; B = 0.5*B;
 ampA = 1;
 ampB = 1;   % Attention : V n'est pas paire si ampB ≠ 0
 % Vpot = @(x) zeros(size(x, 1), 1);
-Vpot = @(x) atomicPotential(x, v1, v2, A, B, ampA, ampB);
+Vpot = @(x) atomicPotential(x, v1, v2, A, B, 1, 1);
 % Vpot = @(x) opticalPotential(x, k1, k2, true);
 % Vpot = @(x) 10*trigonometricPolynomial(x, k1, k2, true);
 
@@ -36,12 +37,13 @@ Wpot = @(x) atomicPotential(x, v1, v2, A, B, 1, -1);
 delta = 0.5;
 
 edgeslope = -0.5*sqrt(2);
+k1edge = k1;
 k2edge = -edgeslope * k1 + k2;
 kappa = @(y) tanh(1e2*y);
 
 Qpot = @(x) Vpot(x) + delta * kappa(delta * x(:, 1:2) * k2edge) .* Wpot(x);
 
-numNodesX = 100;
+numNodesX = 50;
 meshXY = meshes.MeshRectangle(1, [0 1], [0 1], numNodesX, numNodesX);
 cellXY = meshXY.domain('volumic');
 edge0x = meshXY.domain('xmin'); N0x = edge0x.numPoints;
@@ -50,16 +52,49 @@ edge0y = meshXY.domain('ymin'); N0y = edge0y.numPoints;
 edge1y = meshXY.domain('ymax'); N1y = edge1y.numPoints;
 
 %% Represent coefficient
-numX = 8;
-numY = 8;
+numX = 2;
+numY = 2;
 R = [v1, v2];
 transQpot = @(x) Qpot((R * x(:, 1:2)')');
-H = figure;
+
+Rotmat = @(a) [cos(a), -sin(a); sin(a) cos(a)];
+WpotRot = @(a, x) Wpot((Rotmat(a) * x(:, 1:2)')');
+
+% H = figure;
+% for idX = -numX:numX-1
+%   for idY = -numY:numY-1
+%     X = meshXY.points(:, 1) + idX;
+%     Y = meshXY.points(:, 2) + idY;
+% 
+%     trisurf(meshXY.triangles, X, Y, Wpot([X, Y]));
+%     % trisurf(meshXY.triangles, X, Y, Qpot([X, Y]));
+%     % trisurf(meshXY.triangles, X, Y, transQpot([X, Y])); 
+%     hold on;
+%     shading interp;
+%     view(2);
+%     set(gca, 'DataAspectRatio', [1 1 1]);
+%   end
+% end
+% 
+% % set(H, 'Position', get(0, 'Screensize'), 'visible', 'off');
+% % clim([1, 2]);
+% axis off;
+% colorbar off;
+% view(2);
+% % print(H, 'outputs/medium', '-dpng');
+% % system(['convert outputs/medium.png -trim outputs/medium.png']);
+% % close(H);
+
+
+figure;
+Qpot = @(x) Vpot(x) + kappa(x(:, 1:2) * [1; 0]) .* Wpot(x) + 2*kappa(x(:, 1:2) * [0; 1]) .* Wpot(x);
+% subplot(1, 2, 1);
 for idX = -numX:numX-1
   for idY = -numY:numY-1
     X = meshXY.points(:, 1) + idX;
     Y = meshXY.points(:, 2) + idY;
-
+    
+    % trisurf(meshXY.triangles, X, Y, Wpot([X, Y]));
     trisurf(meshXY.triangles, X, Y, Qpot([X, Y]));
     % trisurf(meshXY.triangles, X, Y, transQpot([X, Y])); 
     hold on;
@@ -68,15 +103,23 @@ for idX = -numX:numX-1
     set(gca, 'DataAspectRatio', [1 1 1]);
   end
 end
+colormap jet
 
-set(H, 'Position', get(0, 'Screensize'), 'visible', 'off');
-% clim([1, 2]);
-axis off;
-colorbar off;
-view(2);
-print(H, 'outputs/medium', '-dpng');
-system(['convert outputs/medium.png -trim outputs/medium.png']);
-close(H);
+% subplot(1, 2, 2);
+% for idX = -numX:numX-1
+%   for idY = -numY:numY-1
+%     X = meshXY.points(:, 1) + idX;
+%     Y = meshXY.points(:, 2) + idY;
+% 
+%     trisurf(meshXY.triangles, X, Y, Vpot(2*pi/3, [X,Y]) + 0*Wpot([-X,Y]));
+%     hold on;
+%     shading interp;
+%     view(2);
+%     set(gca, 'DataAspectRatio', [1 1 1]);
+%   end
+% end
+% colormap jet
+
 
 error();
 

@@ -8,7 +8,7 @@
   
 
   %% Problem-related parameters
-  HcObj = applications.HoneycombObject('none', 'none', 'none');
+  HcObj = tools.HoneycombObject('none', 'none', 'none');
 
   % Honeycomb lattice potentials
   HcObj.V = @(x) 20 * cos(x(:, 1:2) *  HcObj.dualVec1) +...

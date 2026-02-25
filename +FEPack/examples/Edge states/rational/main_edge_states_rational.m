@@ -7,7 +7,7 @@
   a1 = 1; b1 = 0;
   
   %% Problem-related parameters
-  HcObj = applications.HoneycombObject('none', 'none', 'none');
+  HcObj = tools.HoneycombObject('none', 'none', 'none');
 
   % Honeycomb lattice potentials
   % centers = [-1/sqrt(3), 1/sqrt(3); 0, 0];
@@ -15,9 +15,9 @@
   % ampsW   = [ 0;  0];
   % ampsA   = [ 1;  1];
   % rads    = [0.2; 0.2];
-  % HcObj.V = @(x) FEPack.tools.atomicPotential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsV, rads);
-  % HcObj.W = @(x) FEPack.tools.atomicPotential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsW, rads);
-  % HcObj.A = @(x) FEPack.tools.atomicPotential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsA, rads);
+  % HcObj.V = @(x) FEPack.tools.FUN_atomic_potential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsV, rads);
+  % HcObj.W = @(x) FEPack.tools.FUN_atomic_potential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsW, rads);
+  % HcObj.A = @(x) FEPack.tools.FUN_atomic_potential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsA, rads);
 
   HcObj.V = @(x) 1 * cos(x(:, 1:2) *  HcObj.dualVec1) +...
                  1 * cos(x(:, 1:2) *  HcObj.dualVec2) +...

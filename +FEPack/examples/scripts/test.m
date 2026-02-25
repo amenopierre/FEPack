@@ -14,9 +14,9 @@ numCellsInfinite = 2;
 
 tic;
 % mu2D = generate_coefficient('cutoff2', [1; 0], [sqrt(2), 1]);
-mu2D = @(x) perCutoffCircle(x, vecperA, vecperB, [0.25, 0.75], [-0.1, 0.1]) +...
-            perCutoffCuboid(x, vecperA, vecperB, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
-% mu2D = @(x) perCutoffCuboid(x, vecperA, vecperB, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
+mu2D = @(x) tools.FUN_per_cutoff_circle(x, vecperA, vecperB, [0.25, 0.75], [-0.1, 0.1]) +...
+            tools.FUN_per_cutoff_cuboid(x, vecperA, vecperB, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
+% mu2D = @(x) tools.FUN_per_cutoff_cuboid(x, vecperA, vecperB, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
 toc;
 
 figure;

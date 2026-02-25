@@ -19,7 +19,7 @@ function [mesh_pos, mesh_neg, mesh_int, op_pos, op_neg, op_int, BCstruct_pos, BC
     BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{4});
     BCstruct_pos.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domains{3});
   else
-    FourierIds = [0 0]; FourierIds(1) = numNodesXpos/4;
+    FourierIds = [0 0]; FourierIds(1) = floor(numNodesXpos/4);
     BCstruct_pos.spB0 = FEPack.spaces.FourierBasis(mesh_pos.domains{4}, FourierIds);
     BCstruct_pos.spB1 = FEPack.spaces.FourierBasis(mesh_pos.domains{3}, FourierIds);
   end
@@ -34,7 +34,7 @@ function [mesh_pos, mesh_neg, mesh_int, op_pos, op_neg, op_int, BCstruct_pos, BC
     BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{4});
     BCstruct_neg.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domains{3});
   else
-    FourierIds = [0 0]; FourierIds(1) = numNodesXneg/4;
+    FourierIds = [0 0]; FourierIds(1) = floor(numNodesXneg/4);
     BCstruct_neg.spB0 = FEPack.spaces.FourierBasis(mesh_neg.domains{4}, FourierIds);
     BCstruct_neg.spB1 = FEPack.spaces.FourierBasis(mesh_neg.domains{3}, FourierIds);
   end

@@ -1,5 +1,5 @@
-function val = perCutoffCircle(x, vecperA, vecperB, centre, BBradius, sigma)
-  % function val = perCutoffCircle(x, vecperA, vecperB, centre, BBradius, sigma)
+function val = FUN_per_cutoff_circle(x, vecperA, vecperB, centre, BBradius, sigma)
+  % function val = FUN_per_cutoff_circle(x, vecperA, vecperB, centre, BBradius, sigma)
   % defines a 2D periodic function such that in a cell of periodicity,
   % one has a radial cutoff function.
   %

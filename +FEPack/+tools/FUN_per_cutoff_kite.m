@@ -1,5 +1,5 @@
-function val = perCutoffKite(x, vecperA, vecperB, centre, constsKite, sigma)
-  % function val = perCutoffKite(x, vecperA, vecperB, centre, constsKite, sigma)
+function val = FUN_per_cutoff_kite(x, vecperA, vecperB, centre, constsKite, sigma)
+  % function val = FUN_per_cutoff_kite(x, vecperA, vecperB, centre, constsKite, sigma)
   % defines a 2D periodic function such that in a cell of periodicity,
   % one has a cutoff function with support inside a kite.
   %

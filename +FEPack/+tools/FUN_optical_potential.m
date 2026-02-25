@@ -1,4 +1,4 @@
-function val = opticalPotential(x, dualVec1, dualVec2, is_even)
+function val = FUN_optical_potential(x, dualVec1, dualVec2, is_even)
       
   if (is_even)
     Xmod = cos(x(:, 1:2) *  dualVec1) + ...

@@ -1,14 +1,14 @@
 import FEPack.*
 
 %% Honeycomb lattice
-HcObj = applications.HoneycombObject('none', 'none');
+HcObj = tools.HoneycombObject('none', 'none');
 
 % centers = [-1/sqrt(3), 1/sqrt(3); 0, 0];
 % ampsV   = [0;  0];
 % ampsW   = [10; 10];
 % rads    = [0.2; 0.2];
-% HcObj.V = @(x) FEPack.tools.atomicPotential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsV, rads);
-% HcObj.W = @(x) 1 + FEPack.tools.atomicPotential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsW, rads);
+% HcObj.V = @(x) FEPack.tools.FUN_atomic_potential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsV, rads);
+% HcObj.W = @(x) 1 + FEPack.tools.FUN_atomic_potential(x, HcObj.vecPer1, HcObj.vecPer2, centers, ampsW, rads);
 
 HcObj.V = @(x) 0 * cos(x(:, 1:2) *  HcObj.dualVec1) +...
                0 * cos(x(:, 1:2) *  HcObj.dualVec2) +...
@@ -121,7 +121,7 @@ function [mshPos, mshNeg, mshInt, op_pos, op_neg, op_int, pbinputsNew] = constru
     op_pos.BCstruct.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mshPos.domains{4});
     op_pos.BCstruct.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mshPos.domains{3});
   else
-    FourierIds = [0 0]; FourierIds(1) = numNodesXpos/4;
+    FourierIds = [0 0]; FourierIds(1) = floor(numNodesXpos/4);
     op_pos.BCstruct.spB0 = FEPack.spaces.FourierBasis(mshPos.domains{4}, FourierIds);
     op_pos.BCstruct.spB1 = FEPack.spaces.FourierBasis(mshPos.domains{3}, FourierIds);
   end
@@ -136,7 +136,7 @@ function [mshPos, mshNeg, mshInt, op_pos, op_neg, op_int, pbinputsNew] = constru
     op_neg.BCstruct.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mshNeg.domains{4});
     op_neg.BCstruct.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mshNeg.domains{3});
   else
-    FourierIds = [0 0]; FourierIds(1) = numNodesXneg/4;
+    FourierIds = [0 0]; FourierIds(1) = floor(numNodesXneg/4);
     op_neg.BCstruct.spB0 = FEPack.spaces.FourierBasis(mshNeg.domains{4}, FourierIds);
     op_neg.BCstruct.spB1 = FEPack.spaces.FourierBasis(mshNeg.domains{3}, FourierIds);
   end
@@ -150,7 +150,7 @@ function [mshPos, mshNeg, mshInt, op_pos, op_neg, op_int, pbinputsNew] = constru
     op_int.spBint_neg = FEPack.spaces.PeriodicLagrangeBasis(mshInt.domains{4});
     op_int.spBint_pos = FEPack.spaces.PeriodicLagrangeBasis(mshInt.domains{3});
   else
-    FourierIds = [0 0]; FourierIds(1) = numNodesXint/4;
+    FourierIds = [0 0]; FourierIds(1) = floor(numNodesXint/4);
     op_int.spBint_pos = FEPack.spaces.FourierBasis(mshInt.domains{4}, FourierIds);
     op_int.spBint_neg = FEPack.spaces.FourierBasis(mshInt.domains{3}, FourierIds);
   end

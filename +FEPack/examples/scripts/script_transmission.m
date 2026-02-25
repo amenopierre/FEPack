@@ -17,8 +17,8 @@ if strcmpi(problem_setting, 'A')
   period_posFun = 1;
   period_negFun = sqrt(2);
 
-  mu2Dpos = @(x) 0.5 + perCutoffCircle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.2, 0.2]);
-  rho2Dpos = @(x) 0.5 + perCutoffCuboid(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
+  mu2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.2, 0.2]);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], [0; period_posFun], [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
   mu2Dneg  = @(x) 1 + 0.5 * cos(2*pi*x(:, 1)) .* cos(2*pi*x(:, 2)/period_negFun);
   rho2Dneg = @(x) 1 + 0.25 * sin(2*pi*x(:, 1)) + 0.25 * sin(2*pi*x(:, 2)/period_negFun);
 
@@ -39,8 +39,8 @@ else
   % 2D coefficients
   vecperFun = [-sqrt(2), 1]; % [-sqrt(2), 1];
   
-  mu2Dpos = @(x) 0.5 + perCutoffCircle(x, [1; 0], vecperFun, [0.5, 0.5], [-0.2, 0.2]);
-  rho2Dpos = @(x) 0.5 + perCutoffCuboid(x, [1; 0], vecperFun, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
+  mu2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_circle(x, [1; 0], vecperFun, [0.5, 0.5], [-0.2, 0.2]);
+  rho2Dpos = @(x) 0.5 + tools.FUN_per_cutoff_cuboid(x, [1; 0], vecperFun, [0.5, 0.5], [-0.2, 0.2], [-0.2, 0.2], 0.5, 1);
   mu2Dneg  = @(x) ones(size(x, 1), 1);
   rho2Dneg = @(x) ones(size(x, 1), 1);
 
@@ -190,7 +190,7 @@ if strcmpi(basis_functions, 'Lagrange')
   BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh3Dpos.domain('xmin'));
   BCstruct_pos.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh3Dpos.domain('xmax'));
 else
-  FourierIds = [0, numNodes3D/2, 0];
+  FourierIds = [0, floor(numNodes3D/2), 0];
   BCstruct_pos.spB0 = spaces.FourierBasis(mesh3Dpos.domain('xmin'), FourierIds);
   BCstruct_pos.spB1 = spaces.FourierBasis(mesh3Dpos.domain('xmax'), FourierIds);
 end
@@ -202,7 +202,7 @@ if strcmpi(basis_functions, 'Lagrange')
   BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh3Dneg.domain('xmin'));
   BCstruct_neg.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh3Dneg.domain('xmax'));
 else
-  FourierIds = [0, numNodes3D/2, 0];
+  FourierIds = [0, floor(numNodes3D/2), 0];
   BCstruct_neg.spB0 = spaces.FourierBasis(mesh3Dneg.domain('xmin'), FourierIds);
   BCstruct_neg.spB1 = spaces.FourierBasis(mesh3Dneg.domain('xmax'), FourierIds);
 end

@@ -25,7 +25,7 @@ function [dispmesh, val] = edge_states_irrational_3D(...
     init_BCstruct_pos.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domain('xmin'));
     init_BCstruct_pos.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_pos.domain('xmax'));
   else
-    FourierIds = [0 0 0]; FourierIds(1) = numNodesXpos/4;
+    FourierIds = [0 0 0]; FourierIds(1) = floor(numNodesXpos/4);
     init_BCstruct_pos.spB0 = FEPack.spaces.FourierBasis(mesh_pos.domain('xmin'), FourierIds);
     init_BCstruct_pos.spB1 = FEPack.spaces.FourierBasis(mesh_pos.domain('xmax'), FourierIds);
   end
@@ -40,7 +40,7 @@ function [dispmesh, val] = edge_states_irrational_3D(...
     init_BCstruct_neg.spB0 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domain('xmin'));
     init_BCstruct_neg.spB1 = FEPack.spaces.PeriodicLagrangeBasis(mesh_neg.domain('xmax'));
   else
-    FourierIds = [0 0 0]; FourierIds(1) = numNodesXneg/4;
+    FourierIds = [0 0 0]; FourierIds(1) = floor(numNodesXneg/4);
     init_BCstruct_neg.spB0 = FEPack.spaces.FourierBasis(mesh_neg.domain('xmin'), FourierIds);
     init_BCstruct_neg.spB1 = FEPack.spaces.FourierBasis(mesh_neg.domain('xmax'), FourierIds);
   end

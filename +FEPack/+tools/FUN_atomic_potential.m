@@ -1,4 +1,4 @@
-function val = atomicPotential(x, vecPer1, vecPer2, centers, amps, rads)
+function val = FUN_atomic_potential(x, vecPer1, vecPer2, centers, amps, rads)
 
   % centers: 2 x Nc vector
   % amps:   Nc x 1  vector
@@ -22,8 +22,7 @@ function val = atomicPotential(x, vecPer1, vecPer2, centers, amps, rads)
     Xmod = (R * (mod(T * (x(:, 1:2).' - centers(:, idC)) + 0.5, 1) - 0.5)).';
     normXmod = sqrt(Xmod(:, 1).^2 + Xmod(:, 2).^2);
 
-    val = val +...
-          amps(idC) * FEPack.tools.cutoff(normXmod, -rads(idC)*normR, rads(idC)*normR);
+    val = val + amps(idC) * FEPack.tools.cutoff(normXmod, -rads(idC)*normR, rads(idC)*normR);
 
   end
 
